@@ -1,0 +1,18 @@
+# data and secrets
+data/
+cache/
+.env
+*.tif
+*.parquet
+*.csv.gz
+*.pbf
+
+# python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# project documents (kept local)
+docs/*.docx

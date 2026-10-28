@@ -1,0 +1,12 @@
+rasterio
+geopandas
+shapely
+pyproj
+osmnx
+duckdb
+pandas
+numpy
+scipy
+matplotlib
+python-dotenv
+pyyaml
