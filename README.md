@@ -35,6 +35,7 @@ docs/               project proposal documents
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+pip install -e .               # makes src/guvenli_rota importable
 cp .env.example .env             # then put your OpenCelliD token in .env
 ```
 

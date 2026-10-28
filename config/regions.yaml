@@ -1,0 +1,20 @@
+# Phase 0 test regions (provisional, not yet agreed with the advisor).
+# utm_bounds: [xmin, ymin, xmax, ymax] in EPSG:32636, snapped to 30 m, 10.02 km = 334 cells per side.
+# Centers geocoded from OSM Nominatim on 2026-10-28 (osmnx.geocode).
+regions:
+  antalya_periurban:
+    label: "Kent çevresi: Antalya, Konyaaltı/Kepez"
+    # Center moved north from the Konyaaltı/Kepez midpoint to (36.94, 30.68)
+    # to keep the sea out (the earlier box was ~20% sea; this one has 0.03% WorldCover water).
+    center_lonlat: [30.68, 36.94]
+    utm_bounds: [288390, 4085730, 298410, 4095750]
+  saklikent_mountain:
+    label: "Dağlık: Saklıkent, Korkuteli (Toros Dağları)"
+    # Nominatim "Saklıkent, Korkuteli, Antalya"
+    center_lonlat: [30.3332, 36.8382]
+    utm_bounds: [257160, 4075200, 267180, 4085220]
+  konya_plain:
+    label: "Ova: Konya Ovası, Çumra"
+    # Nominatim "Çumra, Konya, Türkiye"
+    center_lonlat: [32.7846, 37.5720]
+    utm_bounds: [475980, 4153350, 486000, 4163370]
