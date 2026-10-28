@@ -16,3 +16,4 @@ __pycache__/
 
 # project documents (kept local)
 docs/*.docx
+*.egg-info/

@@ -43,8 +43,7 @@ Bağlantılar Ekim 2026'da kontrol edildi. Hepsi ücretsiz. Sadece OpenCelliD he
 - DOI: 10.5281/zenodo.7254221, lisans CC BY 4.0
 
 ### 3. OpenStreetMap (yol ağı)
-- Faz 0 için: OSMnx ile küçük bölgeyi doğrudan çek (`graph_from_bbox` / `graph_from_polygon`).
-- Tekrar üretilebilir sürüm için sonra: Geofabrik tarihli dosyası `https://download.geofabrik.de/europe/turkey-261001.osm.pbf` (yaklaşık 620 MB). Faz 0'da indirme, sadece README'de not et.
+- Faz 0'da da Geofabrik tarihli dosyası kullanılıyor: `https://download.geofabrik.de/europe/turkey-261001.osm.pbf` (yaklaşık 650 MB). Overpass sunucusu yoğunluktan 502 verdiği için OSMnx ile doğrudan çekmekten vazgeçildi. `scripts/download_osm.py` dosyayı indirip `data/raw/<bölge>/osm_roads.osm` olarak bölgelere kırpıyor, OSMnx `graph_from_xml` ile okunuyor.
 - Lisans ODbL, atıf: "© OpenStreetMap contributors"
 
 ### 4. OpenCelliD (baz istasyonu konumları)

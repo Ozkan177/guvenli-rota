@@ -10,3 +10,4 @@ scipy
 matplotlib
 python-dotenv
 pyyaml
+osmium
