@@ -1,0 +1,4 @@
+region,cells,crs,res_m,same_transform_shape_all_layers,dem_median_abs_err_m_noshift,dem_median_abs_err_m_best_1cell_shift,landcover_agree_pct_noshift,landcover_agree_pct_best_1cell_shift,osm_nodes_on_road_cells_pct,road_cells_pct,built_cells_pct,slope_mean_built,slope_mean_nonbuilt,slope_mean_crop,slope_p90_built
+antalya_periurban,334x334,EPSG:32636,30,True,0.37,0.8,92.5,75.1,100.0,44.8,45.7,2.72,3.61,1.16,5.22
+saklikent_mountain,334x334,EPSG:32636,30,True,1.85,4.75,97.5,87.6,100.0,4.5,0.1,10.86,17.69,4.45,18.0
+konya_plain,334x334,EPSG:32636,30,True,0.09,0.18,96.8,89.8,100.0,8.6,9.7,1.03,0.43,0.38,1.94
