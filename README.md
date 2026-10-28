@@ -39,6 +39,23 @@ pip install -e .               # makes src/guvenli_rota importable
 cp .env.example .env             # then put your OpenCelliD token in .env
 ```
 
+## Reproducing Phase 0
+
+```bash
+python scripts/download_dem.py
+python scripts/download_worldcover.py
+python scripts/download_osm.py          # ~650 MB Geofabrik extract
+python scripts/download_ookla.py
+python scripts/download_opencellid.py   # or place 286.csv.gz in data/raw/opencellid/ by hand
+python scripts/extract_osm_masts.py
+python scripts/check_dem.py; python scripts/check_worldcover.py; python scripts/check_osm.py
+python scripts/check_ookla.py; python scripts/check_opencellid.py; python scripts/plot_quicklook.py
+python scripts/build_grid.py; python scripts/check_grid.py
+python scripts/h1_antalya.py; python scripts/check_needs.py
+```
+
+Results: `reports/veri_fizibilite_raporu.md` (feasibility report, Turkish), tables in `reports/checks/`, figures in `reports/figures/`.
+
 ## Data sources
 
 | Dataset | Use | Access | License |
