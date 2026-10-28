@@ -11,7 +11,10 @@ ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
 RAW = DATA / "raw"
 MANIFEST = DATA / "data_manifest.csv"
+PROCESSED = DATA / "processed"
+REPORTS = ROOT / "reports"
 GRID_CRS = "EPSG:32636"
+GRID_RES = 30
 MANIFEST_FIELDS = ["dataset", "version", "source", "file", "download_date", "size_bytes", "sha256"]
 
 
@@ -23,6 +26,53 @@ def load_regions():
     for r in regions.values():
         r["bbox"] = to_wgs.transform_bounds(*r["utm_bounds"], densify_pts=21)
     return regions
+
+
+def grid_spec(region):
+    """Affine transform and (rows, cols) of the region's 30 m grid in GRID_CRS."""
+    from rasterio.transform import from_origin
+
+    x1, y1, x2, y2 = region["utm_bounds"]
+    shape = (round((y2 - y1) / GRID_RES), round((x2 - x1) / GRID_RES))
+    return from_origin(x1, y2, GRID_RES, GRID_RES), shape
+
+
+def to_utm(lon, lat):
+    return Transformer.from_crs("EPSG:4326", GRID_CRS, always_xy=True).transform(lon, lat)
+
+
+def load_cells(name):
+    """OpenCelliD cells clipped to the buffered region, with UTM x/y columns."""
+    import pandas as pd
+
+    df = pd.read_csv(RAW / name / "opencellid_cells.csv")
+    df["x"], df["y"] = to_utm(df.lon.values, df.lat.values)
+    return df
+
+
+def cluster_sites(cells, dist_m=300):
+    """Group cells (antenna sectors) into sites: complete-linkage clusters no wider than dist_m.
+
+    Returns one row per site: x, y (mean of member cells), n_cells, radios.
+    """
+    import numpy as np
+    import pandas as pd
+    from scipy.cluster.hierarchy import fcluster, linkage
+
+    if len(cells) == 0:
+        return pd.DataFrame(columns=["x", "y", "n_cells", "radios"])
+    xy = cells[["x", "y"]].to_numpy()
+    labels = np.ones(len(xy), int) if len(xy) == 1 else fcluster(linkage(xy, "complete"), dist_m, "distance")
+    g = cells.assign(site=labels).groupby("site")
+    return pd.DataFrame({
+        "x": g.x.mean(), "y": g.y.mean(), "n_cells": g.size(),
+        "radios": g.radio.agg(lambda r: "+".join(sorted(set(r)))),
+    }).reset_index(drop=True)
+
+
+def in_utm_box(x, y, region):
+    x1, y1, x2, y2 = region["utm_bounds"]
+    return (x >= x1) & (x <= x2) & (y >= y1) & (y <= y2)
 
 
 def buffered_bbox(bbox, deg):
