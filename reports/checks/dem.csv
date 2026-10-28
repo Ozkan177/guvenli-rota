@@ -1,0 +1,4 @@
+region,crs,res_deg,res_m_x,res_m_y,shape,covers_region,void_pct,z_min,z_p01,z_mean,z_p99,z_max
+antalya_periurban,EPSG:4326,0.0002777777777777778,24.7,30.7,451x369,True,0.0,19,31,134,296,309
+saklikent_mountain,EPSG:4326,0.0002777777777777778,24.7,30.7,451x370,True,0.0,999,1110,1831,2472,2651
+konya_plain,EPSG:4326,0.0002777777777777778,24.5,30.7,445x362,True,0.0,1003,1006,1010,1016,1042

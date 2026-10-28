@@ -1,0 +1,4 @@
+region,cells_buffered_5km,cells_in_box,sites_in_box,lte_enb_in_box,changeable_pct,nearest_cell_to_center_km,radio_GSM,radio_UMTS,radio_LTE,radio_NR
+antalya_periurban,764,269,94,96,100.0,1.9,25,4,240,0
+saklikent_mountain,11,0,0,0,,7.1,0,0,0,0
+konya_plain,0,0,0,0,,,0,0,0,0

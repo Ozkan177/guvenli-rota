@@ -1,0 +1,4 @@
+region,tiles_latest,area_pct_latest,tiles_pooled_2024q1_2026q3,area_pct_pooled,tests_latest_total,tests_per_tile_median,tests_per_tile_p90,pct_tiles_lt5_tests,down_mbps_median,latency_ms_median
+antalya_periurban,303,67.0,383,85.6,2453,4.0,18.0,51.8,144.4,24.0
+saklikent_mountain,4,1.0,16,3.7,10,1.0,5.200000000000001,75.0,15.9,33.5
+konya_plain,32,7.5,76,17.7,66,1.0,3.0,90.6,51.1,35.0
