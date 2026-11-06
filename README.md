@@ -51,10 +51,15 @@ python scripts/extract_osm_masts.py
 python scripts/check_dem.py; python scripts/check_worldcover.py; python scripts/check_osm.py
 python scripts/check_ookla.py; python scripts/check_opencellid.py; python scripts/plot_quicklook.py
 python scripts/build_grid.py; python scripts/check_grid.py
+PYTHONPATH=src python scripts/build_buildings.py
+PYTHONPATH=src python scripts/check_buildings.py
 python scripts/h1_antalya.py; python scripts/check_needs.py
 ```
 
 Results: `reports/veri_fizibilite_raporu.md` (feasibility report, Turkish), tables in `reports/checks/`, figures in `reports/figures/`.
+The building layer is stored as `data/processed/<region>/buildings.tif`, where each cell
+contains the estimated building footprint fraction from 0 to 1. Its alignment and
+WorldCover/slope checks are written to `reports/checks/buildings.csv`.
 
 ## Data sources
 
