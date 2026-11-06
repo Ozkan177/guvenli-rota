@@ -1,0 +1,5 @@
+group,n_tiles,tests_total,mean_download_mbps,median_download_mbps,test_weighted_mean_download_mbps,mannwhitney_p,site_x,site_y,site_cells,antenna_height_m,receiver_height_m,max_range_m,compute_seconds
+visible,129,1083,200.53,181.4,242.54,0.12,296480.08366198814,4086151.2981575713,10,30.0,1.5,10000.0,2.17
+not_visible,148,1173,177.35,121.7,177.66,,296480.08366198814,4086151.2981575713,10,30.0,1.5,10000.0,2.17
+all_evaluated,277,2256,188.14,148.17,208.81,,296480.08366198814,4086151.2981575713,10,30.0,1.5,10000.0,2.17
+not_evaluated_off_grid_or_out_of_range,101,1333,212.85,177.98,271.84,,296480.08366198814,4086151.2981575713,10,30.0,1.5,10000.0,2.17
