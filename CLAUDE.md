@@ -15,11 +15,21 @@ Sistemin yapacağı iş: Sahadaki bir ekip ya da araç için birkaç rota önerm
 
 Ayrıntılı proje metni `docs/` klasöründe. Kararsız kaldığında oraya bak.
 
-## Şu anki aşama: Faz 0, veri fizibilitesi
+## Şu anki aşama: WP1'in kalan işleri ve WP2'nin başlangıcı
 
-Danışmana "kullanacağımız açık veriler var" dedik. Şimdi bunun doğru olduğunu kanıtlamamız gerekiyor. Faz 0'ın amacı tek: her veri setinin gerçekten indirilebildiğini, Türkiye'yi kapsadığını, beklenen çözünürlükte olduğunu ve projede işe yarayacağını sayılarla göstermek. Aynı zamanda GitHub reposunu ve proje iskeletini kuruyoruz.
+Faz 0 (veri fizibilitesi) bitti. Sonuçlar, kararlar ve sınırlılıklar `reports/veri_fizibilite_raporu.md` içinde, ayrıntılı tablolar `reports/checks/` altında. Üç bölge için yükseklik, eğim, arazi örtüsü ve yol katmanları ortak 30 m ızgarada hazır (`scripts/build_grid.py`, hizalama testi `scripts/check_grid.py`).
 
-Faz 0'da rota algoritması, dil modeli ya da arayüz yazma. Sadece en sondaki isteğe bağlı küçük A* denemesi istisna.
+Bağlantı katmanında ana kaynak Ookla. OpenCelliD Türkiye'de çok seyrek: Antalya kutusunda 269 hücre var, Saklıkent ve Konya kutularında hiç yok, konumların hepsi tahmin (`changeable=1`). OpenCelliD sadece kent çevresinde yardımcı veri olarak kullanılır. Kırsalda Ookla karosu olmaması "kapsama yok" değil "veri yok" demek, bu ikisini ayrı tut.
+
+WP1'in kalan işleri (Feyiz Ali Bozkurt, Furkan Şenol):
+- Izgaraya bina katmanı (OSM) ve bağlantı katmanını eklemek.
+- Süre, risk ve bağlantı maliyet katmanlarını hesaplamak.
+- DEM üzerinden görüş hattı hesabı.
+- H1'i görüş hattına dayalı bağlantı skoruyla tekrarlamak.
+
+WP2 başlıyor (Özkan Damdelen, Muhammed İkbal Ceyhan): ağırlıklı A*, NAMOA* ve NSGA-II'nin maliyet ızgarası üzerinde uygulanması ve karşılaştırılması. Çıktı: 3 bölge x 50 başlangıç-hedef çifti için rotalar ve Pareto kümeleri; çalışma süresi, bellek ve hipervolüm tabloları.
+
+Git akışı: Ekip `feature/<konu>` branch'lerinde çalışıyor, `main`'e PR ile birleştiriliyor. Doğrudan `main`'e commit atma.
 
 ## Veri setleri
 
@@ -84,7 +94,7 @@ Danışmanla henüz kesinleşmedi. Faz 0 için şu üç bölgeyi kullan, her bir
 
 Sınır kutularını OSM üzerinden yer adından bul ve `config/regions.yaml` dosyasına yaz. Üç bölge de UTM 36N (EPSG:32636) içinde kalıyor, ortak ızgara için bunu kullan. WorldCover'ın N36E030 karosu üç bölgeyi de kapsamalı, kontrol et.
 
-## Faz 0 adımları
+## Faz 0 adımları (tamamlandı)
 
 Her adımı bitirince kısa bir commit at. Adım bitmeden diğerine geçme.
 
