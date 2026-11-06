@@ -1,0 +1,4 @@
+region,building_count,building_area_pct,worldcover_built_area_pct,building_area_in_worldcover_built_pct,worldcover_built_area_covered_by_buildings_pct,slope_mean_building_cells,slope_mean_nonbuilding_cells,crs,res_m,same_transform_shape_as_other_layers
+antalya_periurban,29888,7.22,45.75,87.9,13.88,3.3,3.17,EPSG:32636,30,True
+saklikent_mountain,341,0.04,0.11,10.7,3.58,8.28,17.72,EPSG:32636,30,True
+konya_plain,2419,0.34,9.72,90.38,3.2,1.24,0.48,EPSG:32636,30,True
