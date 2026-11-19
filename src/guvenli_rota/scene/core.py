@@ -1,13 +1,16 @@
 """Scene folder format v0.1 (see docs/scene_format.md): load, save, validate, surface."""
 import json
 import math
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 import rasterio
+from rasterio.crs import CRS
 from rasterio.features import rasterize
 from rasterio.transform import from_origin
+from shapely.geometry import box, shape
 
 FORMAT_VERSION = "0.1"
 
@@ -58,18 +61,31 @@ class Scene:
     def load(cls, path):
         path = Path(path)
         meta = _read_json(path, "scene.json")
-        landcover = _read_raster(path, "landcover.tif") if (path / "landcover.tif").exists() else None
+        rasters = {"terrain.tif": _read_raster(path, "terrain.tif")}
+        if (path / "landcover.tif").exists():
+            rasters["landcover.tif"] = _read_raster(path, "landcover.tif")
         fc = _read_json(path, "obstacles.geojson")
         if not isinstance(fc, dict) or fc.get("type") != "FeatureCollection" or not isinstance(fc.get("features"), list):
             raise SceneError("obstacles.geojson: must be a FeatureCollection with a 'features' list")
-        return cls(
+        scene = cls(
             meta=meta,
-            terrain=_read_raster(path, "terrain.tif"),
+            terrain=rasters["terrain.tif"][0],
             obstacles=fc["features"],
             observers=_read_json(path, "observers.json"),
             tasks=_read_json(path, "tasks.json"),
-            landcover=landcover,
+            landcover=rasters["landcover.tif"][0] if "landcover.tif" in rasters else None,
         )
+        for name, (_, crs, transform) in rasters.items():
+            scene._check_grid(name, crs, transform)
+        return scene
+
+    def _check_grid(self, name, crs, transform):
+        if crs != CRS.from_user_input(self.meta["crs"]):
+            raise SceneError(f"{name}: CRS {crs} does not match scene.json crs {self.meta['crs']!r}")
+        if not transform.almost_equals(self.transform, precision=1e-6):
+            raise SceneError(f"{name}: origin ({transform.c}, {transform.f}) and pixel size "
+                             f"({transform.a}, {-transform.e}) do not match scene.json "
+                             f"origin {self.meta['origin']} and resolution_m {self.meta['resolution_m']}")
 
     def save(self, path):
         _validate(self)
@@ -151,7 +167,7 @@ def _read_raster(folder, name):
     if not p.exists():
         raise SceneError(f"{name}: file missing in {folder}")
     with rasterio.open(p) as src:
-        return src.read(1)
+        return src.read(1), src.crs, src.transform
 
 
 def _write_json(path, obj):
@@ -193,6 +209,8 @@ def _validate(scene):
             raise SceneError(f"{name}: raster is {array.shape[0]}x{array.shape[1]} (height x width) "
                              f"but scene.json gives height={expected[0]}, width={expected[1]}")
 
+    x0, y0 = meta["origin"]
+    extent = box(x0, y0 - expected[0] * scene.resolution, x0 + expected[1] * scene.resolution, y0)
     for i, f in enumerate(scene.obstacles):
         where = f"obstacles.geojson: feature at index {i}"
         _require(f, ("geometry", "properties"), where)
@@ -201,6 +219,13 @@ def _validate(scene):
         _require(f["properties"], OBSTACLE_FIELDS, f"{where}: properties")
         _check_choice(f["properties"]["kind"], KINDS, where, "kind")
         _check_choice(f["properties"]["height_source"], HEIGHT_SOURCES, where, "height_source")
+        footprint = shape(f["geometry"])
+        inside = footprint.intersection(extent).area
+        if inside == 0:
+            raise SceneError(f"{where}: footprint lies entirely outside the scene")
+        if inside < footprint.area:
+            warnings.warn(f"{where}: footprint extends outside the scene, only the part inside is used",
+                          stacklevel=3)
 
     for i, o in enumerate(scene.observers):
         where = f"observers.json: {_label('observer', i, o)}"

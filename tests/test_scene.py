@@ -127,6 +127,14 @@ def edit_json(folder, name, change):
     (lambda d: edit_json(d, "obstacles.geojson", lambda fc: fc["features"][1]["properties"].pop("height_m") and None),
      r"obstacles\.geojson: feature at index 1: properties: missing field 'height_m'"),
     (lambda d: (d / "observers.json").write_text("[{", encoding="utf-8"), r"observers\.json: invalid JSON"),
+    (lambda d: edit_json(d, "scene.json", lambda m: m.update(crs="EPSG:32635")),
+     r"terrain\.tif: CRS EPSG:32636 does not match scene\.json crs 'EPSG:32635'"),
+    (lambda d: edit_json(d, "scene.json", lambda m: m.update(origin=[-1.0, 201.0])),
+     r"terrain\.tif: origin \(0\.0, 200\.0\) .* do not match scene\.json origin \[-1\.0, 201\.0\]"),
+    (lambda d: edit_json(d, "scene.json", lambda m: m.update(resolution_m=10.5)),
+     r"terrain\.tif: .* pixel size \(10\.0, 10\.0\) do not match .* resolution_m 10\.5"),
+    (lambda d: edit_json(d, "obstacles.geojson", lambda fc: fc["features"][0].update(geometry=box(300, 300, 320, 320))),
+     r"obstacles\.geojson: feature at index 0: footprint lies entirely outside the scene"),
 ])
 def test_broken_scene_reports_file_and_field(tmp_path, corrupt, message):
     folder = tmp_path / "s"
@@ -134,3 +142,13 @@ def test_broken_scene_reports_file_and_field(tmp_path, corrupt, message):
     corrupt(folder)
     with pytest.raises(SceneError, match=message):
         Scene.load(folder)
+
+
+def test_obstacle_partly_outside_warns_and_keeps_the_inside_part(tmp_path):
+    folder = tmp_path / "s"
+    make_scene().save(folder)
+    edit_json(folder, "obstacles.geojson",
+              lambda fc: fc.update(features=[obstacle(box(190, 150, 230, 180), "building", 8.0)]))
+    with pytest.warns(UserWarning, match=r"obstacles\.geojson: feature at index 0: footprint extends outside"):
+        scene = Scene.load(folder)
+    assert set(zip(*np.nonzero(scene.obstacle_mask()))) == {(2, 19), (3, 19), (4, 19)}
