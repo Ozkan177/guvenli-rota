@@ -5,6 +5,7 @@ planned on one scene can be measured on another scene with the same origin but a
 Inputs are only a Scene, numpy arrays and the [(row, col), ...] path returned by A*.
 """
 import numpy as np
+from scipy import stats
 
 
 def path_to_xy(scene, path):
@@ -84,3 +85,53 @@ def length_increase(route_xy, baseline_xy):
     if base == 0:
         raise ValueError("baseline route has zero length")
     return 100.0 * (route_length_m(route_xy) - base) / base
+
+
+def _quartiles(v):
+    q1, med, q3 = np.percentile(v, [25, 50, 75])
+    return float(q1), float(med), float(q3)
+
+
+def paired_summary(a, b):
+    """Compare paired measurements a[i], b[i] (e.g. shortest vs unseen route in the same scene).
+
+    Differences are b - a. Returns a dict with:
+      n; median, q1, q3 of a, b and the differences;
+      n_positive, n_negative, n_zero: sign counts of the differences;
+      p_value: two-sided Wilcoxon signed-rank test (zero differences dropped);
+      rank_biserial: matched-pairs rank-biserial correlation (T+ - T-) / (T+ + T-) over the nonzero
+        differences, from -1 (b always smaller) to 1 (b always larger).
+    If every difference is zero, p_value is 1.0 and rank_biserial is 0.0.
+    """
+    a, b = np.asarray(a, dtype=float), np.asarray(b, dtype=float)
+    if a.shape != b.shape or a.ndim != 1 or len(a) == 0:
+        raise ValueError("a and b must be non-empty 1D arrays of the same length")
+    d = b - a
+    out = {"n": len(d)}
+    for name, v in (("a", a), ("b", b), ("diff", d)):
+        out[f"q1_{name}"], out[f"median_{name}"], out[f"q3_{name}"] = _quartiles(v)
+    out["n_positive"], out["n_negative"] = int((d > 0).sum()), int((d < 0).sum())
+    out["n_zero"] = int((d == 0).sum())
+
+    nz = d[d != 0]
+    if len(nz) == 0:
+        out["p_value"], out["rank_biserial"] = 1.0, 0.0
+        return out
+    ranks = stats.rankdata(np.abs(nz))
+    t_pos, t_neg = ranks[nz > 0].sum(), ranks[nz < 0].sum()
+    out["p_value"] = float(stats.wilcoxon(nz).pvalue)
+    out["rank_biserial"] = float((t_pos - t_neg) / (t_pos + t_neg))
+    return out
+
+
+def agreement(estimate, reference):
+    """How well an estimate follows a reference (e.g. grid visibility vs ray-traced ground truth).
+
+    Returns a dict with spearman_rho, p_value and mean_abs_diff (mean of |estimate - reference|).
+    """
+    estimate, reference = np.asarray(estimate, dtype=float), np.asarray(reference, dtype=float)
+    if estimate.shape != reference.shape or estimate.ndim != 1 or len(estimate) < 2:
+        raise ValueError("estimate and reference must be 1D arrays of the same length, at least 2 values")
+    res = stats.spearmanr(estimate, reference)
+    return {"spearman_rho": float(res.statistic), "p_value": float(res.pvalue),
+            "mean_abs_diff": float(np.abs(estimate - reference).mean())}

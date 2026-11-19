@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from guvenli_rota.evaluation.metrics import (length_increase, path_to_xy, resample_route, route_length_m,
-                                             visible_fraction, visible_length_m)
+from guvenli_rota.evaluation.metrics import (agreement, length_increase, paired_summary, path_to_xy, resample_route,
+                                             route_length_m, visible_fraction, visible_length_m)
 from guvenli_rota.scene import Scene
 
 
@@ -101,3 +101,43 @@ def test_visible_fraction_rejects_mask_of_another_grid():
     coarse, fine = make_scene(30.0, 10), make_scene(5.0, 60)
     with pytest.raises(ValueError, match="shape"):
         visible_fraction([[15.0, 285.0]], fine, left_half_visible(coarse))
+
+
+def test_paired_summary_all_differences_positive():
+    a = np.arange(1.0, 9.0)
+    s = paired_summary(a, a + 1)
+    assert (s["n"], s["n_positive"], s["n_negative"], s["n_zero"]) == (8, 8, 0, 0)
+    assert s["median_diff"] == s["q1_diff"] == s["q3_diff"] == 1.0
+    assert s["median_a"] == 4.5 and s["median_b"] == 5.5
+    assert s["rank_biserial"] == 1.0
+    assert s["p_value"] == pytest.approx(2 / 2**8)             # exact test: only 1 of 256 sign patterns is as extreme, both tails
+
+
+def test_paired_summary_reversed_gives_negative_effect():
+    a = np.arange(1.0, 9.0)
+    assert paired_summary(a + 1, a)["rank_biserial"] == -1.0
+
+
+def test_paired_summary_identical_arrays():
+    s = paired_summary([1.0, 2.0, 3.0], [1.0, 2.0, 3.0])
+    assert (s["n_zero"], s["p_value"], s["rank_biserial"]) == (3, 1.0, 0.0)
+
+
+def test_agreement_identical_arrays():
+    v = [0.1, 0.4, 0.2, 0.9, 0.5]
+    r = agreement(v, v)
+    assert r["spearman_rho"] == pytest.approx(1.0)
+    assert r["mean_abs_diff"] == 0.0
+
+
+def test_agreement_monotone_but_shifted():
+    r = agreement([1.0, 2.0, 3.0, 4.0], [11.0, 12.0, 13.0, 14.0])
+    assert r["spearman_rho"] == pytest.approx(1.0)
+    assert r["mean_abs_diff"] == 10.0
+
+
+def test_paired_summary_rank_biserial_with_mixed_signs():
+    # differences 1, -2, 3 -> ranks 1, 2, 3 -> T+ = 4, T- = 2 -> (4 - 2) / 6
+    s = paired_summary([0.0, 0.0, 0.0], [1.0, -2.0, 3.0])
+    assert s["rank_biserial"] == pytest.approx(1 / 3)
+    assert (s["n_positive"], s["n_negative"]) == (2, 1)
