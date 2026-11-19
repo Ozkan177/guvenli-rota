@@ -12,9 +12,19 @@ is checked against the planner's own computation, and explanations that do not m
 
 ## Status
 
-Phase 0: data feasibility. We verify that each open dataset can be downloaded, covers Turkey and the
-three test regions (peri-urban Antalya, mountainous Saklıkent, Konya Plain), has the expected resolution,
-and is usable for the project. No routing, LLM, or UI code yet.
+- Phase 0 (data feasibility) is done: five open datasets are downloaded for three test regions and
+  aligned on a common 30 m grid. See `reports/veri_fizibilite_raporu.md`.
+- Working code: weighted A* on a slope grid (`src/guvenli_rota/routing/astar.py`) and a line-of-sight
+  module on the DEM (in review).
+- Next (Dec 2026): the planner runs in two environments, synthetic 3D scenes where the ground truth is
+  known and scenes built from real open data, both in one scene format (`docs/scene_format.md`).
+  The first target is a route that observers cannot see, compared with the shortest route.
+
+Tests run on every pull request (`.github/workflows/tests.yml`):
+
+```bash
+pip install -e . && pytest -q
+```
 
 ## Repository layout
 
@@ -26,7 +36,7 @@ config/             region definitions and settings
 data/raw/           downloaded data per region (not in git)
 data/processed/     aligned 30 m grids (not in git)
 reports/            feasibility report and figures
-docs/               project proposal documents
+docs/               scene format and project documents
 ```
 
 ## Setup

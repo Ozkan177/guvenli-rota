@@ -11,25 +11,42 @@ Türkçe adı: Görev Kritik Sistemler İçin Güvenli Rota Belirleme ve Rota Te
 Danışman: Dr. Öğr. Üyesi Taner Danışman
 Ekip: Özkan Damdelen (takım lideri), Muhammed İkbal Ceyhan, Feyiz Ali Bozkurt, Furkan Şenol
 
-Sistemin yapacağı iş: Sahadaki bir ekip ya da araç için birkaç rota önermek. Her rotanın üç maliyeti var: süre, risk ve haberleşme bağlantısının kalitesi. Bu üç ölçüt birbiriyle çeliştiği için tek bir en iyi rota çıkmıyor, birbirine üstün gelmeyen rotalardan oluşan bir Pareto kümesi çıkıyor. Kullanıcı bir rota seçtiğinde bir dil modeli, rotanın neden seçildiğini ve diğerlerinin neden seçilmediğini Türkçe açıklıyor. Açıklamadaki her sayı planlayıcının kendi hesabıyla karşılaştırılıyor, tutmayan açıklama gösterilmiyor.
+Sistemin yapacağı iş: Sahadaki bir ekip ya da araç için birkaç rota önermek. Her rotanın maliyetleri var: süre, risk (eğim, açık arazide kalma, gözlemcilere görünürlük) ve haberleşme bağlantısının kalitesi. Bu ölçütler birbiriyle çeliştiği için tek bir en iyi rota çıkmıyor, birbirine üstün gelmeyen rotalardan oluşan bir Pareto kümesi çıkıyor. Kullanıcı bir rota seçtiğinde bir dil modeli, rotanın neden seçildiğini ve diğerlerinin neden seçilmediğini Türkçe açıklıyor. Açıklamadaki her sayı planlayıcının kendi hesabıyla karşılaştırılıyor, tutmayan açıklama gösterilmiyor.
+
+11.11.2026 görüşmesinden sonra projenin merkezine "gözlemcilere görünmeden A'dan B'ye gitmek" problemi geçti ve proje iki ortamda yürüyor:
+1. Sentetik 3B sahneler: arazi, bina, araç ve gözlemcileri biz üretiyoruz, doğru cevap (zemin gerçeği) biliniyor.
+2. Gerçek veri sahneleri: aynı biçim Copernicus DEM, OSM binaları ve WorldCover'dan bir dönüştürücüyle üretiliyor (dijital ikiz yaklaşımı).
+Planlayıcı iki ortamda da aynı kodla çalışmalı. Ortak sahne biçimi `docs/scene_format.md` içinde. Kapsam görünürlük hesabı ve rota planlamayla sınırlı; hedefleme ya da atış hesabı bu projenin konusu değil.
 
 Ayrıntılı proje metni `docs/` klasöründe. Kararsız kaldığında oraya bak.
 
-## Şu anki aşama: WP1'in kalan işleri ve WP2'nin başlangıcı
+## Şu anki aşama: 5. görüşmeye hazırlık (hedef 30 Kasım-13 Aralık 2026)
 
-Faz 0 (veri fizibilitesi) bitti. Sonuçlar, kararlar ve sınırlılıklar `reports/veri_fizibilite_raporu.md` içinde, ayrıntılı tablolar `reports/checks/` altında. Üç bölge için yükseklik, eğim, arazi örtüsü ve yol katmanları ortak 30 m ızgarada hazır (`scripts/build_grid.py`, hizalama testi `scripts/check_grid.py`).
+Faz 0 (veri fizibilitesi) bitti, sonuçlar `reports/veri_fizibilite_raporu.md` içinde. main'de ortak 30 m ızgara, OSM bina katmanı ve eğim ızgarasında ağırlıklı A* (`src/guvenli_rota/routing/astar.py`, 34 test) var. Görüş hattı modülü `feature/line-of-sight-test` dalında, henüz main'e birleşmedi.
 
-Bağlantı katmanında ana kaynak Ookla. OpenCelliD Türkiye'de çok seyrek: Antalya kutusunda 269 hücre var, Saklıkent ve Konya kutularında hiç yok, konumların hepsi tahmin (`changeable=1`). OpenCelliD sadece kent çevresinde yardımcı veri olarak kullanılır. Kırsalda Ookla karosu olmaması "kapsama yok" değil "veri yok" demek, bu ikisini ayrı tut.
+Syllabus'a göre 5. görüşmenin konusu: entegrasyon ve prototip durumu, test sonuçları, final rapor ve sunum planı. 5. görüşmede main'de şunlar çalışır durumda olmalı:
 
-WP1'in kalan işleri (Feyiz Ali Bozkurt, Furkan Şenol):
-- Izgaraya bina katmanı (OSM) ve bağlantı katmanını eklemek.
-- Süre, risk ve bağlantı maliyet katmanlarını hesaplamak.
-- DEM üzerinden görüş hattı hesabı.
-- H1'i görüş hattına dayalı bağlantı skoruyla tekrarlamak.
+| # | İş | Nerede | Sorumlu | Hedef tarih |
+|---|---|---|---|---|
+| 1 | Görüş hattı modülü main'de (referans OpenCelliD dosyasıyla yeniden çalıştırılmış) | `connectivity/line_of_sight.py` | Furkan Şenol | 23 Kasım |
+| 2 | Sahne biçimi: `Scene` sınıfı, yükleme, kaydetme, doğrulama, `surface()` | `src/guvenli_rota/scene/` | Özkan Damdelen | 25 Kasım |
+| 3 | Sentetik sahne üreteci: en az düz ova ve tepelik tip, tohumla tekrarlanabilir, 5/10/30 m | `scene/synthetic.py`, `scripts/make_synthetic_scenes.py` | Muhammed İkbal Ceyhan | 29 Kasım |
+| 4 | Gözlemci görünürlüğü: menzil, görüş açısı, göz yüksekliği, gündüz/gece; görünürlük maliyet katmanı | `visibility/observer.py` | Furkan Şenol | 29 Kasım |
+| 5 | Gerçek veriden sahne: Antalya için DEM + OSM binaları + WorldCover, iki varyant (yalnız DEM, DEM + bina) | `scene/converter.py`, `scripts/build_real_scene.py` | Feyiz Ali Bozkurt | 29 Kasım |
+| 6 | A* görünürlük maliyetiyle: eğim + görünürlük ağırlıklı, gözlemcilerden kaçan rota | `routing/astar.py` | Muhammed İkbal Ceyhan | 2 Aralık |
+| 7 | Uçtan uca demo: sahne -> görünürlük -> en kısa rota ve görünmeyen rota -> şekil ve tablo, sentetik ve Antalya | `scripts/demo_unseen_route.py` | Özkan Damdelen | 4 Aralık |
+| 8 | İlk deney: 1 sahne tipi x 3 çözünürlük x 5 tohum, görünür kalınan yol oranı (en kısa ve görünmeyen rota) | `scripts/exp_visibility.py`, `reports/checks/exp_visibility.csv` | Özkan Damdelen, Furkan Şenol | 6 Aralık |
+| 9 | GitHub Actions'ta testler yeşil, README güncel, final rapor taslak başlıkları ve sunum planı | `.github/`, `README.md`, `docs/final_report_outline.md` | Özkan Damdelen | 6 Aralık |
 
-WP2 başlıyor (Özkan Damdelen, Muhammed İkbal Ceyhan): ağırlıklı A*, NAMOA* ve NSGA-II'nin maliyet ızgarası üzerinde uygulanması ve karşılaştırılması. Çıktı: 3 bölge x 50 başlangıç-hedef çifti için rotalar ve Pareto kümeleri; çalışma süresi, bellek ve hipervolüm tabloları.
+Zemin gerçeği için ışın izleme (1 m, trimesh ya da Open3D) 5. görüşmeye yetişmezse görüşmede "sıradaki iş" olarak sunulur; o zamana kadar 1 m'lik ızgarada aynı görüş hattı hesabı referans olarak kullanılabilir. NAMOA*, NSGA-II, dil modeli ve arayüz Senior Design II'ye kalıyor.
 
-Git akışı: Ekip `feature/<konu>` branch'lerinde çalışıyor, `main`'e PR ile birleştiriliyor. Doğrudan `main`'e commit atma.
+Görev sırası, aşamalar ve her iş için hazır Claude Code promptları `docs/gorev_sirasi_ve_promptlar.md` içinde. Ek işler: İş 10 ışın izlemeyle zemin gerçeği (Furkan, yetişirse), İş 11 entegrasyon testleri (İkbal, Feyiz).
+
+Kurallar:
+- Her iş kendi `feature/<konu>` dalında, main'e PR ile birleşir. Doğrudan main'e commit atma.
+- Yeni kod için test yaz. CI (`.github/workflows/tests.yml`) her PR'da `pytest` çalıştırıyor ve sadece hafif bağımlılıkları kuruyor (numpy, scipy, networkx). Testin rasterio ya da shapely isterse workflow'a ekle.
+- Sahne biçimini değiştirmen gerekiyorsa önce `docs/scene_format.md` dosyasını güncelleyen ayrı bir PR aç, ekibe haber ver.
+- Sentetik sahneler tohumdan yeniden üretildiği için commit edilmez, `data/scenes/` altına yazılır.
 
 ## Veri setleri
 
@@ -140,12 +157,20 @@ Danışmanla konuşulanlar. Faz 0 raporunda veri bu ihtiyaçları karşılıyor 
 - Güvenlik ile iletişimin kopmaması arasında denge kurulacak.
 - Mobil hat kapsaması olmayan yerlerde uydu haberleşmesi bir seçenek olarak konuşuldu. Mobil kapsamanın olmadığı alanları veriden ayırt edebiliyor muyuz?
 
+## Toplantı 4 notları (11.11.2026)
+
+- Gerçek açık veri yeterince ayrıntılı değil: bir alanın tarla mı, bina mı, ağaç mı olduğu belli değil, kırsalda ağ verisi çok az. Gerçek veride görünürlük tahmininin doğru olup olmadığını ölçemiyoruz.
+- Danışmanın önerisi: kontrolü bizde olan basit bir 3B sahne (ev, araba, gözlemciler). Gözlemcilerin göremeyeceği A-B rotası projeksiyon / görüş hattıyla bulunacak. Bir 3B oyun haritası da kullanılabilir.
+- İleride gerçek haritayı ve 30 m yükseklik verisini aynı biçime çeviren bir dönüştürücü. En kötü durumda yöntemin simülasyonda ve 30 m veriyle çalıştığını göstermek yeterli.
+- TÜBİTAK 2209-A başvurusu buna göre güncellendi ve aynı gün danışman tarafından onaylandı. Yeni hipotezler: H4 (ızgara görünürlük maliyeti zemin gerçeğiyle ilişkili, çözünürlük kalınlaştıkça hata artar), H5 (görünürlüğe duyarlı rota görünür kalınan yol oranını en kısa rotaya göre azaltır).
+
 ## Çalışma kuralları
 
 - Büyük dosyaları asla commit etme, `data/` klasörü git dışında kalmalı.
 - `.env` dosyasını ve token'ı asla commit etme, loglara da yazma.
 - `git push` yapmadan önce sor. Uzak repo adresini kullanıcı verecek.
 - Ders kuralı: her öğrenci kendi işini kendi GitHub hesabıyla commit ediyor, commit geçmişi bireysel katkının kanıtı sayılıyor. Commit mesajlarını kısa ve açıklayıcı İngilizce yaz.
+- Commit mesajlarına ve PR açıklamalarına "Co-Authored-By", "Generated with Claude Code" ya da oturum linki gibi satırlar ekleme. Bu, `.claude/settings.json` içindeki `attribution` ayarıyla da kapalı.
 - Kod ve yorumlar İngilizce, rapor Türkçe.
 - Bir veri kaynağı çalışmazsa sessizce başka bir kaynağa geçme. Durup ne olduğunu yaz, alternatifi öner.
 - Ders kuralı: yapay zekâ kullanımı raporda beyan edilecek. README'ye "This repository was set up with assistance from Claude Code" notunu ekle.
