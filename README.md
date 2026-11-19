@@ -97,12 +97,12 @@ Raw data is not stored in this repository. Each download is logged in `data/data
 
 ## Team and contributions
 
-| Member | Responsible for | Pull requests |
-|---|---|---|
-| Özkan Damdelen (lead) | Phase 0 data pipeline and feasibility report (`scripts/download_*.py`, `scripts/check_*.py`, `scripts/build_grid.py`, `scripts/h1_antalya.py`; committed before the PR workflow started), scene format (`src/guvenli_rota/scene/`), evaluation metrics (`src/guvenli_rota/evaluation/`), CI and project documents | #1, #4, #5, #6, #7 |
-| Muhammed İkbal Ceyhan | Weighted A* (`src/guvenli_rota/routing/`), synthetic scene generator (planned) | #3 |
-| Feyiz Ali Bozkurt | OSM building layer (`scripts/build_buildings.py`, `scripts/check_buildings.py`), real-data scene converter (planned) | #2 |
-| Furkan Şenol | Line of sight (`src/guvenli_rota/connectivity/`), observer visibility (planned) | Line-of-sight module: in review |
+| Member | GitHub username | Responsible for | Pull requests |
+|---|---|---|---|
+| Özkan Damdelen (lead) | Ozkan177 | Phase 0 data pipeline and feasibility report (`scripts/download_*.py`, `scripts/check_*.py`, `scripts/build_grid.py`, `scripts/h1_antalya.py`; committed before the PR workflow started), scene format (`src/guvenli_rota/scene/`), evaluation metrics (`src/guvenli_rota/evaluation/`), CI and project documents | #1, #4, #5, #6, #7 |
+| Muhammed İkbal Ceyhan | muhammedceyhan | Weighted A* (`src/guvenli_rota/routing/`), synthetic scene generator (planned) | #3 |
+| Feyiz Ali Bozkurt | Bozkurt-FeyizAli | OSM building layer (`scripts/build_buildings.py`, `scripts/check_buildings.py`), real-data scene converter (planned) | #2 |
+| Furkan Şenol | Nightwolf37 | Line of sight (`src/guvenli_rota/connectivity/`), observer visibility (planned) | Line-of-sight module: in review |
 
 ## AI use
 
