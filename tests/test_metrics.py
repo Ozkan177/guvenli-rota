@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
 
-from guvenli_rota.evaluation.metrics import length_increase, path_to_xy, resample_route, route_length_m
+from guvenli_rota.evaluation.metrics import (length_increase, path_to_xy, resample_route, route_length_m,
+                                             visible_fraction, visible_length_m)
 from guvenli_rota.scene import Scene
 
 
@@ -61,3 +62,42 @@ def test_resample_skips_repeated_points():
 
 def test_length_increase_in_percent():
     assert length_increase([[0, 0], [3, 0], [3, 4]], [[0, 0], [3, 4]]) == pytest.approx(40.0)
+
+
+def left_half_visible(scene):
+    """Cells with centre x < 150 m are visible: the left half of a 300 m x 300 m scene."""
+    h, w = scene.shape
+    centres_x = np.array([scene.cell_to_world(0, c)[0] for c in range(w)])
+    return np.broadcast_to(centres_x < 150.0, (h, w)).copy()
+
+
+def test_straight_route_across_half_visible_grid():
+    scene = make_scene(30.0, 10)
+    route = path_to_xy(scene, [(5, c) for c in range(10)])     # x from 15 to 285 m along row 5
+    pts = resample_route(route, step_m=1.0)                     # 271 points, x = 15, 16, ..., 285
+    frac = visible_fraction(pts, scene, left_half_visible(scene))
+    assert frac == pytest.approx(135 / 271)                     # x = 15..149 are visible
+    assert frac == pytest.approx(0.5, abs=0.01)
+    assert visible_length_m(route, scene, left_half_visible(scene)) == pytest.approx(135.0, abs=0.5)
+
+
+def test_same_route_gives_same_fraction_at_30m_and_5m():
+    coarse, fine = make_scene(30.0, 10), make_scene(5.0, 60)
+    route = path_to_xy(coarse, [(9 - i, i) for i in range(10)])  # diagonal (15, 15) -> (285, 285)
+    pts = resample_route(route, step_m=1.0)
+    f30 = visible_fraction(pts, coarse, left_half_visible(coarse))
+    f5 = visible_fraction(pts, fine, left_half_visible(fine))
+    assert f30 == pytest.approx(0.5, abs=0.01)
+    assert f5 == pytest.approx(f30, abs=0.01)                   # only samples next to x = 150 may differ
+
+
+def test_visible_fraction_rejects_points_outside_the_scene():
+    scene = make_scene(30.0, 10)
+    with pytest.raises(ValueError, match="outside the scene"):
+        visible_fraction([[15.0, 285.0], [310.0, 285.0]], scene, left_half_visible(scene))
+
+
+def test_visible_fraction_rejects_mask_of_another_grid():
+    coarse, fine = make_scene(30.0, 10), make_scene(5.0, 60)
+    with pytest.raises(ValueError, match="shape"):
+        visible_fraction([[15.0, 285.0]], fine, left_half_visible(coarse))
