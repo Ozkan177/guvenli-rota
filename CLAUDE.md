@@ -40,6 +40,8 @@ Syllabus'a göre 5. görüşmenin konusu: entegrasyon ve prototip durumu, test s
 
 Zemin gerçeği için ışın izleme (1 m, trimesh ya da Open3D) 5. görüşmeye yetişmezse görüşmede "sıradaki iş" olarak sunulur; o zamana kadar 1 m'lik ızgarada aynı görüş hattı hesabı referans olarak kullanılabilir. NAMOA*, NSGA-II, dil modeli ve arayüz Senior Design II'ye kalıyor.
 
+Görev sırası, aşamalar ve her iş için hazır Claude Code promptları `docs/gorev_sirasi_ve_promptlar.md` içinde. Ek işler: İş 10 ışın izlemeyle zemin gerçeği (Furkan, yetişirse), İş 11 entegrasyon testleri (İkbal, Feyiz).
+
 Kurallar:
 - Her iş kendi `feature/<konu>` dalında, main'e PR ile birleşir. Doğrudan main'e commit atma.
 - Yeni kod için test yaz. CI (`.github/workflows/tests.yml`) her PR'da `pytest` çalıştırıyor ve sadece hafif bağımlılıkları kuruyor (numpy, scipy, networkx). Testin rasterio ya da shapely isterse workflow'a ekle.
