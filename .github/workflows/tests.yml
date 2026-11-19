@@ -14,6 +14,6 @@ jobs:
         with:
           python-version: "3.11"
       # Unit tests only need the light dependencies; the data scripts are not run in CI.
-      - run: pip install numpy scipy networkx pyyaml pyproj rasterio pytest
+      - run: pip install numpy scipy networkx pyyaml pyproj rasterio shapely pytest
       - run: pip install -e . --no-deps
       - run: pytest -q
