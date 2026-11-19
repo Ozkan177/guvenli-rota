@@ -89,7 +89,7 @@ CLAUDE.md'yi oku. feature/line-of-sight-test dalındayım. Bu dalı main'e PR il
 1. main'i bu dala merge et, çakışma varsa çöz.
 2. data/raw/opencellid/286.csv.gz dosyasının SHA256'sını hesapla. data/data_manifest.csv'deki değerle (80d2456a... ile başlıyor) aynı mı, bana söyle. Aynı değilse dur ve dosyayı Özkan'dan isteyeceğimi not et.
 3. Aynıysa scripts/check_opencellid.py, scripts/build_grid.py ve scripts/los_demo.py'yi sırayla yeniden çalıştır. reports/checks/los_antalya.csv eskisiyle aynı mı, farkı tablo olarak göster.
-4. data/data_manifest.csv'de main'e göre sadece tekrar eden 4 satırın silinmesi kalsın, satır sonları main'deki gibi olsun. Düz git diff'te sadece 4 satır görünmeli.
+4. data/data_manifest.csv'ye dokunma, main'deki halini al (git checkout main -- data/data_manifest.csv). Manifest temizliği ayrı bir PR'da yapıldı.
 5. pytest -q çalıştır, hepsi geçmeli.
 Her adımı ayrı commit yap. Push etmeden önce bana sor. Push'tan sonra PR açıklaması için kısa bir İngilizce metin yaz: ne eklendi, testler, Antalya sonucu (görünen/görünmeyen karolarda medyan hız ve p değeri).
 
