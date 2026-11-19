@@ -29,7 +29,7 @@ Syllabus'a göre 5. görüşmenin konusu: entegrasyon ve prototip durumu, test s
 | # | İş | Nerede | Sorumlu | Hedef tarih |
 |---|---|---|---|---|
 | 1 | Görüş hattı modülü main'de (referans OpenCelliD dosyasıyla yeniden çalıştırılmış) | `connectivity/line_of_sight.py` | Furkan Şenol | 23 Kasım |
-| 2 | Sahne biçimi: `Scene` sınıfı, yükleme, kaydetme, doğrulama, `surface()` | `src/guvenli_rota/scene/` | Özkan Damdelen | 25 Kasım |
+| 2 | Sahne biçimi: `Scene` sınıfı, yükleme, kaydetme, doğrulama, `surface()` | `src/guvenli_rota/scene/` | Özkan Damdelen | 25 Kasım, tamamlandı (PR #6) |
 | 3 | Sentetik sahne üreteci: en az düz ova ve tepelik tip, tohumla tekrarlanabilir, 5/10/30 m | `scene/synthetic.py`, `scripts/make_synthetic_scenes.py` | Muhammed İkbal Ceyhan | 29 Kasım |
 | 4 | Gözlemci görünürlüğü: menzil, görüş açısı, göz yüksekliği, gündüz/gece; görünürlük maliyet katmanı | `visibility/observer.py` | Furkan Şenol | 29 Kasım |
 | 5 | Gerçek veriden sahne: Antalya için DEM + OSM binaları + WorldCover, iki varyant (yalnız DEM, DEM + bina) | `scene/converter.py`, `scripts/build_real_scene.py` | Feyiz Ali Bozkurt | 29 Kasım |
