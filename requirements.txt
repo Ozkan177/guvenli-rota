@@ -11,3 +11,4 @@ matplotlib
 python-dotenv
 pyyaml
 osmium
+pytest
