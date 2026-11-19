@@ -95,7 +95,8 @@ scene = Scene.load(path)       # reads and validates the folder
 scene.terrain                  # (H, W) float array
 scene.surface()                # terrain + obstacle heights, following terrain_is_surface
 scene.obstacle_mask()          # (H, W) bool, cells covered by an obstacle
-scene.world_to_cell(x, y)      # -> (row, col)
+scene.world_to_cell(x, y)      # -> (row, col) of the cell containing the point
+scene.cell_to_world(row, col)  # -> (x, y) of the cell centre
 scene.save(path)
 ```
 
