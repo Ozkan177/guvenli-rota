@@ -170,6 +170,7 @@ Danışmanla konuşulanlar. Faz 0 raporunda veri bu ihtiyaçları karşılıyor 
 - `.env` dosyasını ve token'ı asla commit etme, loglara da yazma.
 - `git push` yapmadan önce sor. Uzak repo adresini kullanıcı verecek.
 - Ders kuralı: her öğrenci kendi işini kendi GitHub hesabıyla commit ediyor, commit geçmişi bireysel katkının kanıtı sayılıyor. Commit mesajlarını kısa ve açıklayıcı İngilizce yaz.
+- Commit mesajlarına ve PR açıklamalarına "Co-Authored-By", "Generated with Claude Code" ya da oturum linki gibi satırlar ekleme. Bu, `.claude/settings.json` içindeki `attribution` ayarıyla da kapalı.
 - Kod ve yorumlar İngilizce, rapor Türkçe.
 - Bir veri kaynağı çalışmazsa sessizce başka bir kaynağa geçme. Durup ne olduğunu yaz, alternatifi öner.
 - Ders kuralı: yapay zekâ kullanımı raporda beyan edilecek. README'ye "This repository was set up with assistance from Claude Code" notunu ekle.

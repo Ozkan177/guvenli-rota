@@ -61,24 +61,21 @@ Hepsi CLAUDE.md'yi okuyarak başlar; proje bağlamı orada.
 ----------------------------------------------------------------------
 P0-Ö  ÖZKAN: LAPTOP KURULUMU (Aşama 0)
 ----------------------------------------------------------------------
-(Önce terminalde:)
-  git clone https://github.com/Ozkan177/guvenli-rota.git
-  cd guvenli-rota
-  git config user.name "Ozkan177"
-  git config user.email "<GitHub hesabındaki e-posta>"
-  python -m venv .venv
-  .venv\Scripts\activate          (macOS/Linux: source .venv/bin/activate)
-  pip install -r requirements.txt
-  pip install -e .
-  copy .env.example .env           (macOS/Linux: cp) ve token'ı .env'e yaz
-Eski bilgisayara erişebiliyorsan data/ klasörünü USB ile kopyala. En azından data/raw/opencellid/286.csv.gz dosyasını kopyala: OpenCelliD günde 2 indirme izni veriyor ve yeni indirilen dosya farklı bir anlık görüntü olur.
+(VS Code'da zip'ten açılan proje klasörünü aç, Claude Code'a bunu ver. Hepsini Claude Code yapar.)
 
-(Sonra Claude Code'a:)
-Bu repoyu yeni bir bilgisayara kurdum ve önceki Claude Code konuşmam diğer bilgisayarda kaldı. CLAUDE.md, README.md, docs/scene_format.md ve reports/veri_fizibilite_raporu.md dosyalarını oku ve projenin nerede olduğunu bana kısaca özetle. Sonra:
-1. pytest -q çalıştır.
-2. data/ klasöründe hangi dosyalar var, data/data_manifest.csv'deki SHA256 değerleriyle karşılaştır. Eksik ya da farklı olanları tablo halinde göster. Hiçbir şeyi indirme, sadece rapor et.
-3. Eksik dosya varsa hangi scripts/ betiğiyle hangi sırayla üretileceğini yaz. OpenCelliD'yi yeniden indirmeden önce bana sor.
-4. git branch -a ve son 10 commit'i göster, hangi dalların main'e birleşmediğini söyle.
+Bu klasör, projenin eski bilgisayardan zip ile getirilmiş bir kopyası. İçindeki data/ klasörü, .env dosyası ve docs/ altındaki .docx dosyaları git'te yok. Bunları silme, değiştirme, commit etme. .env dosyasının içeriğini okuma ve ekrana yazma. Bu klasörü GitHub'daki https://github.com/Ozkan177/guvenli-rota.git reposuna bağlayıp güncel hale getirmek istiyorum:
+
+1. Önce data/, .env ve docs/*.docx dosyalarını bu klasörün bir üst dizininde guvenli-rota-yedek/ klasörüne kopyala.
+2. Klasörde .git var mı bak.
+   a) Varsa: git status ve git log --all ile GitHub'a gönderilmemiş commit ya da değişiklik var mı göster. Varsa dur ve bana sor. Yoksa git fetch origin, git checkout main, git pull.
+   b) Yoksa: git init, git remote add origin https://github.com/Ozkan177/guvenli-rota.git, git fetch origin, git checkout -f -B main origin/main. Bu komut sadece git'teki dosyaları repodaki haliyle yazar; data/, .env ve .docx dosyalarına dokunmaz. Sonra git status ile git'te olmayan dosyaları listele, hiçbirini silme.
+3. data/, .env ve .docx dosyaları hâlâ yerinde mi kontrol et. Değilse yedekten geri koy.
+4. git config user.name "Ozkan177". user.email olarak git log'da Ozkan177'nin commitlerinde kullanılan e-postayı kullan.
+5. .venv adında sanal ortam kur, etkinleştir, pip install -r requirements.txt ve pip install -e . çalıştır.
+6. data/data_manifest.csv'deki SHA256 değerlerini data/ altındaki dosyalarla karşılaştır. Eksik ya da farklı dosyaları tablo halinde göster. Hiçbir şeyi indirme. Özellikle data/raw/opencellid/286.csv.gz'nin SHA256'sı manifesttekiyle aynı mı, ayrıca söyle.
+7. pytest -q çalıştır.
+8. .claude/settings.json'da attribution ayarının commit ve PR için boş olduğunu kontrol et.
+9. Sonunda bana kısa bir özet ver: ne hazır, ne eksik, git branch -a çıktısı ve hangi dalların main'e birleşmediği.
 
 ----------------------------------------------------------------------
 P0-H  HERKES: ORTAMI GÜNCELLE (Aşama 0)
