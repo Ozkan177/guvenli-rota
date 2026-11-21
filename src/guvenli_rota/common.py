@@ -116,20 +116,28 @@ def sha256(path):
 
 
 def log_download(dataset, version, source, path):
-    """Append one row per produced file to data/data_manifest.csv."""
+    """Record one row per produced file in data/data_manifest.csv, replacing any earlier row for that file."""
     path = Path(path)
-    new = not MANIFEST.exists()
+    row = {
+        "dataset": dataset,
+        "version": version,
+        "source": source,
+        "file": path.relative_to(ROOT).as_posix(),
+        "download_date": date.today().isoformat(),
+        "size_bytes": path.stat().st_size,
+        "sha256": sha256(path),
+    }
+    rows = []
+    if MANIFEST.exists():
+        with open(MANIFEST, newline="", encoding="utf-8") as f:
+            rows = list(csv.DictReader(f))
+    idx = next((i for i, r in enumerate(rows) if r["file"] == row["file"]), None)
+    if idx is None:
+        rows.append(row)
+    else:
+        rows[idx] = row
     MANIFEST.parent.mkdir(parents=True, exist_ok=True)
-    with open(MANIFEST, "a", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=MANIFEST_FIELDS)
-        if new:
-            w.writeheader()
-        w.writerow({
-            "dataset": dataset,
-            "version": version,
-            "source": source,
-            "file": path.relative_to(ROOT).as_posix(),
-            "download_date": date.today().isoformat(),
-            "size_bytes": path.stat().st_size,
-            "sha256": sha256(path),
-        })
+    with open(MANIFEST, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=MANIFEST_FIELDS, lineterminator="\n")
+        w.writeheader()
+        w.writerows(rows)
