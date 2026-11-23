@@ -220,10 +220,12 @@ def _validate(scene):
         _check_choice(f["properties"]["kind"], KINDS, where, "kind")
         _check_choice(f["properties"]["height_source"], HEIGHT_SOURCES, where, "height_source")
         footprint = shape(f["geometry"])
-        inside = footprint.intersection(extent).area
-        if inside == 0:
+        # compare the area left outside, not inside vs total: at UTM magnitudes the two areas of a footprint
+        # that is fully inside can differ by ~1e-14 m2 of floating-point noise
+        outside = footprint.difference(extent).area
+        if outside >= footprint.area:
             raise SceneError(f"{where}: footprint lies entirely outside the scene")
-        if inside < footprint.area:
+        if outside > 1e-6 * footprint.area:
             warnings.warn(f"{where}: footprint extends outside the scene, only the part inside is used",
                           stacklevel=3)
 
