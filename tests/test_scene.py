@@ -1,4 +1,5 @@
 import json
+import warnings
 
 import numpy as np
 import pytest
@@ -152,3 +153,42 @@ def test_obstacle_partly_outside_warns_and_keeps_the_inside_part(tmp_path):
     with pytest.warns(UserWarning, match=r"obstacles\.geojson: feature at index 0: footprint extends outside"):
         scene = Scene.load(folder)
     assert set(zip(*np.nonzero(scene.obstacle_mask()))) == {(2, 19), (3, 19), (4, 19)}
+
+
+UTM_ORIGIN = (296000.0, 4086200.0)
+# Rotated ~15 m building well inside the scene below. At UTM magnitudes, intersection(extent).area comes out
+# 2.8e-14 m2 smaller than footprint.area for this polygon, which used to raise a false "extends outside" warning.
+ROTATED_INSIDE = [[296093.17, 4086110.97], [296106.81, 4086116.6], [296101.26, 4086130.32],
+                  [296087.63, 4086124.69], [296093.17, 4086110.97]]
+
+
+def make_utm_scene(obstacles):
+    """20 x 20 scene of 10 m cells at real UTM 36N coordinates: x 296000-296200, y 4086000-4086200."""
+    x0, y0 = UTM_ORIGIN
+    return Scene(
+        meta={"format_version": "0.1", "name": "test_utm", "source": "synthetic", "seed": 1,
+              "crs": "EPSG:32636", "resolution_m": RES, "width": 20, "height": 20,
+              "origin": list(UTM_ORIGIN), "terrain_is_surface": False},
+        terrain=np.zeros((20, 20), dtype=np.float32), obstacles=obstacles, observers=[],
+        tasks=[{"id": "T1", "start": [x0 + 5, y0 - 195], "goal": [x0 + 195, y0 - 5],
+                "mode": "pedestrian", "time": "day"}],
+    )
+
+
+def test_building_inside_utm_scene_does_not_warn():
+    rotated = {"type": "Polygon", "coordinates": [ROTATED_INSIDE]}
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        make_utm_scene([obstacle(rotated, "building", 6.0)])
+
+
+def test_building_1m_outside_utm_scene_warns():
+    x0, y0 = UTM_ORIGIN
+    with pytest.warns(UserWarning, match=r"feature at index 0: footprint extends outside"):
+        make_utm_scene([obstacle(box(x0 + 189, y0 - 120, x0 + 201, y0 - 100), "building", 6.0)])
+
+
+def test_building_entirely_outside_utm_scene_raises():
+    x0, y0 = UTM_ORIGIN
+    with pytest.raises(SceneError, match=r"feature at index 0: footprint lies entirely outside the scene"):
+        make_utm_scene([obstacle(box(x0 + 210, y0 - 120, x0 + 230, y0 - 100), "building", 6.0)])
