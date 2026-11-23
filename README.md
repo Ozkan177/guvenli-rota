@@ -71,6 +71,40 @@ The building layer is stored as `data/processed/<region>/buildings.tif`, where e
 contains the estimated building footprint fraction from 0 to 1. Its alignment and
 WorldCover/slope checks are written to `reports/checks/buildings.csv`.
 
+## Demo
+
+End-to-end run: scene, then observer visibility, then the shortest route (`w_vis = 0`) and the unseen route
+(`w_vis = 5`), then a figure and a table. It runs on a synthetic hills scene and on the Antalya real-data scene.
+
+```bash
+PYTHONPATH=src python scripts/build_real_scene.py   # once, builds data/scenes/antalya_dem_buildings (~8 min)
+python scripts/demo_unseen_route.py                 # ~1.5 min
+```
+
+Outputs: `reports/figures/demo_unseen_synthetic.png`, `reports/figures/demo_unseen_antalya.png` and
+`reports/checks/demo_unseen.csv`.
+
+How the task in each figure is chosen:
+- **Synthetic** (seeds 0-4, 10 m, building density 0.02, 4 observers): the task whose shortest route is the
+  most visible, among tasks where the unseen route is at most 30 % longer.
+- **Antalya**: of the 5 tasks in `tasks.json`, the one whose shortest route is the most visible.
+
+Visibility is day-time for every task. "Shortest" means least slope-weighted cost, not least length.
+
+Current result (`reports/checks/demo_unseen.csv`):
+
+| Scene | Task | Route | Length (m) | Length increase | Visible |
+|---|---|---|---|---|---|
+| synthetic_hills_s4_10m | T3 | shortest | 2503 | 0.0 % | 83.0 % |
+| synthetic_hills_s4_10m | T3 | unseen | 2943 | 17.6 % | 9.8 % |
+| antalya_dem_buildings | T2 | shortest | 9987 | 0.0 % | 3.1 % |
+| antalya_dem_buildings | T2 | unseen | 9915 | -0.7 % | 0.0 % |
+
+In the Antalya scene the three observers see only 3.2 % of the cells, so no task has a strongly visible
+shortest route. The cause is the terrain, not the visibility code: on a flat surface the tower observer G1
+sees its whole 3 km range (28 % of the scene), but on the scene terrain, even without buildings, it sees
+2.9 %. The plateau top around G1 hides the city below.
+
 ## Data sources
 
 | Dataset | Use | Access | License |
