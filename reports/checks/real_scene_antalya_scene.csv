@@ -1,0 +1,2 @@
+region,n_buildings,building_cell_pct,buildings_csv_area_pct,diff_pct_points,ground_lowering_mean_m,ground_lowering_median_m,ground_lowering_max_m,building_cells_unchanged_pct
+antalya_periurban,29347,7.18,7.22,-0.04,0.78,0.36,9.71,33.73

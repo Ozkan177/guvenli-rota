@@ -1,0 +1,4 @@
+region,height_source,n_buildings,pct,height_median_m,height_min_m,height_max_m
+antalya_periurban,osm_height,42,0.14,12.0,2.0,40.0
+antalya_periurban,osm_levels,440,1.5,27.0,3.0,51.0
+antalya_periurban,default,28865,98.36,6.0,6.0,6.0

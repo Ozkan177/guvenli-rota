@@ -6,50 +6,24 @@ Output: data/processed/<region>/buildings.tif
 from pathlib import Path
 
 import numpy as np
-import osmium
 import rasterio
 from pyproj import Transformer
 from rasterio.features import rasterize
 from rasterio.transform import from_origin
-from shapely.geometry import Polygon, box
+from shapely.geometry import box
 from shapely.ops import transform as transform_geometry
 
 from guvenli_rota.common import GRID_CRS, GRID_RES, PROCESSED, RAW, grid_spec, load_regions
+from guvenli_rota.scene.converter import read_osm_buildings
 
 PBF = RAW / "osm" / "turkey-261001.osm.pbf"
 SUBPIXELS = 10
 
 
-class BuildingHandler(osmium.SimpleHandler):
-    def __init__(self, boxes):
-        super().__init__()
-        self.boxes = boxes
-        self.buildings = {name: [] for name in boxes}
-
-    def way(self, way):
-        if "building" not in way.tags or not way.is_closed():
-            return
-        points = [(node.lon, node.lat) for node in way.nodes if node.location.valid()]
-        if len(points) < 4:
-            return
-        geometry = Polygon(points)
-        if not geometry.is_valid:
-            geometry = geometry.buffer(0)
-        if geometry.is_empty:
-            return
-        for name, region_box in self.boxes.items():
-            if geometry.intersects(region_box):
-                self.buildings[name].append(geometry)
-
-
 def extract_buildings(regions):
-    boxes = {
-        name: box(*r["bbox"])
-        for name, r in regions.items()
-    }
-    handler = BuildingHandler(boxes)
-    handler.apply_file(str(PBF), locations=True)
-    return handler.buildings
+    """{region name: [lon/lat Polygon, ...]} from the Geofabrik extract."""
+    return {name: [geometry for geometry, _ in items]
+            for name, items in read_osm_buildings(PBF, regions).items()}
 
 
 def to_grid_geometries(geometries, region):
