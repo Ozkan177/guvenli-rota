@@ -1,0 +1,5 @@
+scene,task,route,w_vis,length_m,length_increase_pct,visible_pct,astar_s,visibility_s
+synthetic_hills_s4_10m,T3,shortest,0.0,2503.0,0.0,83.0,0.381,3.794
+synthetic_hills_s4_10m,T3,unseen,5.0,2942.6,17.6,9.8,0.771,3.794
+antalya_dem_buildings,T2,shortest,0.0,9986.5,0.0,3.1,0.403,0.58
+antalya_dem_buildings,T2,unseen,5.0,9914.9,-0.7,0.0,0.574,0.58
